@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/ts-a-devops/taskapp-backend
+  IMAGE_NAME: ghcr.io/stephenie20/taskapp-backend
 
 jobs:
   build:

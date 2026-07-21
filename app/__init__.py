@@ -24,8 +24,26 @@ def create_app():
             f"postgresql://{db_user}:{encoded_password}@{db_host}:{db_port}/{db_name}"
         )
     else:
-        # Fallback for local development when env vars are not set
         database_uri = 'postgresql://taskapp_user:taskapp_password@localhost:5432/taskapp'
+Z
+    # Prefer Kubernetes DATABASE_URL
+    database_uri = os.getenv('DATABASE_URL')
+
+    if not database_uri:
+        # Build URI from individual environment variables if available
+        db_host = os.getenv('DATABASE_HOST')
+        db_port = os.getenv('DATABASE_PORT', '5432')
+        db_name = os.getenv('DATABASE_NAME')
+        db_user = os.getenv('DATABASE_USER')
+        db_password = os.getenv('DATABASE_PASSWORD')
+
+        if db_host and db_user and db_name and db_password:
+            encoded_password = quote_plus(db_password)
+            database_uri = (
+                f"postgresql://{db_user}:{encoded_password}@{db_host}:{db_port}/{db_name}"
+            )
+        else:
+            raise Exception("Database configuration missing")
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
